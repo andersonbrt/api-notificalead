@@ -1,21 +1,21 @@
-name: notificalead.com CI
-on:
-  push:
-    branches:
-      - main
-
+name: SSH Server Deploy
+on: [push]
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do repositorio
-        uses: actions/checkout@v1
-      - name: Deploy para meu hosting
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{secrets.SERVER_SSH_KEY}}
-          ARGS: "-rltgoDzvO --delete"
-          SOURCE: "src/"
-          REMOTE_HOST: ${{secrets.REMOTE_HOST}}
-          REMOTE_USER: ${{secrets.REMOTE_USER}}
-          TARGET: ${{secrets.REMOTE_TARGET}}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: SSH Server Deploy
+        uses: kostya-ten/ssh-server-deploy@v4
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          private_key: ${{ secrets.SERVER_SSH_KEY }}
+          scp_source: README.md
+          scp_target: /var/www/laravel
+          before_script: |
+            df -h
+          after_script: |
+            whoami
